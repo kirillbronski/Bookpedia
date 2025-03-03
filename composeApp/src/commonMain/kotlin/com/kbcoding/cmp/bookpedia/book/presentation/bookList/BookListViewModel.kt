@@ -5,6 +5,10 @@ package com.kbcoding.cmp.bookpedia.book.presentation.bookList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kbcoding.cmp.bookpedia.book.domain.Book
+import com.kbcoding.cmp.bookpedia.book.domain.BookRepository
+import com.kbcoding.cmp.bookpedia.core.domain.onError
+import com.kbcoding.cmp.bookpedia.core.domain.onSuccess
+import com.kbcoding.cmp.bookpedia.core.presentation.toUiText
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +24,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BookListViewModel(
-    //private val bookRepository: BookRepository
+    private val bookRepository: BookRepository
 ) : ViewModel() {
 
     private var cachedBooks = emptyList<Book>()
@@ -31,9 +35,9 @@ class BookListViewModel(
     val state = _state
         .onStart {
             if(cachedBooks.isEmpty()) {
-                //observeSearchQuery()
+                observeSearchQuery()
             }
-            //observeFavoriteBooks()
+            observeFavoriteBooks()
         }
         .stateIn(
             viewModelScope,
@@ -61,69 +65,69 @@ class BookListViewModel(
         }
     }
 
-//    private fun observeFavoriteBooks() {
-//        observeFavoriteJob?.cancel()
-//        observeFavoriteJob = bookRepository
-//            .getFavoriteBooks()
-//            .onEach { favoriteBooks ->
-//                _state.update { it.copy(
-//                    favoriteBooks = favoriteBooks
-//                ) }
-//            }
-//            .launchIn(viewModelScope)
-//    }
+    private fun observeFavoriteBooks() {
+        observeFavoriteJob?.cancel()
+        observeFavoriteJob = bookRepository
+            .getFavoriteBooks()
+            .onEach { favoriteBooks ->
+                _state.update { it.copy(
+                    favoriteBooks = favoriteBooks
+                ) }
+            }
+            .launchIn(viewModelScope)
+    }
 
-//    private fun observeSearchQuery() {
-//        state
-//            .map { it.searchQuery }
-//            .distinctUntilChanged()
-//            .debounce(500L)
-//            .onEach { query ->
-//                when {
-//                    query.isBlank() -> {
-//                        _state.update {
-//                            it.copy(
-//                                errorMessage = null,
-//                                searchResults = cachedBooks
-//                            )
-//                        }
-//                    }
-//
-//                    query.length >= 2 -> {
-//                        searchJob?.cancel()
-//                        searchJob = searchBooks(query)
-//                    }
-//                }
-//            }
-//            .launchIn(viewModelScope)
-//    }
+    private fun observeSearchQuery() {
+        state
+            .map { it.searchQuery }
+            .distinctUntilChanged()
+            .debounce(500L)
+            .onEach { query ->
+                when {
+                    query.isBlank() -> {
+                        _state.update {
+                            it.copy(
+                                errorMessage = null,
+                                searchResults = cachedBooks
+                            )
+                        }
+                    }
 
-//    private fun searchBooks(query: String) = viewModelScope.launch {
-//        _state.update {
-//            it.copy(
-//                isLoading = true
-//            )
-//        }
-//        bookRepository
-//            .searchBooks(query)
-//            .onSuccess { searchResults ->
-//                _state.update {
-//                    it.copy(
-//                        isLoading = false,
-//                        errorMessage = null,
-//                        searchResults = searchResults
-//                    )
-//                }
-//            }
-//            .onError { error ->
-//                _state.update {
-//                    it.copy(
-//                        searchResults = emptyList(),
-//                        isLoading = false,
-//                        errorMessage = error.toUiText()
-//                    )
-//                }
-//            }
-//    }
+                    query.length >= 2 -> {
+                        searchJob?.cancel()
+                        searchJob = searchBooks(query)
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun searchBooks(query: String) = viewModelScope.launch {
+        _state.update {
+            it.copy(
+                isLoading = true
+            )
+        }
+        bookRepository
+            .searchBooks(query)
+            .onSuccess { searchResults ->
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = null,
+                        searchResults = searchResults
+                    )
+                }
+            }
+            .onError { error ->
+                _state.update {
+                    it.copy(
+                        searchResults = emptyList(),
+                        isLoading = false,
+                        errorMessage = error.toUiText()
+                    )
+                }
+            }
+    }
 
 }
