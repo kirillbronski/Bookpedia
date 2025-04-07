@@ -21,7 +21,6 @@ import com.kbcoding.cmp.bookpedia.book.presentation.bookDetail.BookDetailScreenR
 import com.kbcoding.cmp.bookpedia.book.presentation.bookDetail.BookDetailViewModel
 import com.kbcoding.cmp.bookpedia.book.presentation.bookList.BookListScreenRoot
 import com.kbcoding.cmp.bookpedia.book.presentation.bookList.BookListViewModel
-import com.plcoding.bookpedia.app.Route
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 

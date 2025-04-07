@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.kbcoding.cmp.bookpedia.book.domain.BookRepository
 import com.kbcoding.cmp.bookpedia.core.domain.onSuccess
-import com.plcoding.bookpedia.app.Route
+import com.kbcoding.cmp.bookpedia.app.Route
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn

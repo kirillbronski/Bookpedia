@@ -1,4 +1,4 @@
-package com.plcoding.bookpedia.app
+package com.kbcoding.cmp.bookpedia.app
 
 import kotlinx.serialization.Serializable
 
